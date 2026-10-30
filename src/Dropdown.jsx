@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MENU_MARGIN_Y = 8
 
 export default function Dropdown({ options, value, onChange }) {
+  const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
 
   const [isOpen, setIsOpen] = useState(false)
@@ -27,8 +28,29 @@ export default function Dropdown({ options, value, onChange }) {
     setIsOpen(!isOpen)
   };
 
+  useEffect(() => {
+      const handleOutsideClick = event => {
+        const target = event.target
+        if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+          setIsOpen(false)
+        }
+      }
+  
+      if (isOpen) {
+        document.addEventListener("click", handleOutsideClick)
+      } else {
+        document.removeEventListener("click", handleOutsideClick)
+      }
+      return () => {
+        document.removeEventListener("click", handleOutsideClick)
+      }
+    }, [isOpen])
+
   return (
-    <div className='dropdown'>
+    <div
+      className='dropdown'
+      ref={dropdownRef}
+    >
       <button
         type='button'
         ref={buttonRef}
