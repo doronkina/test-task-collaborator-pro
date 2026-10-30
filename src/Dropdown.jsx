@@ -1,27 +1,52 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+
+const MENU_MARGIN_Y = 8
 
 export default function Dropdown({ options, value, onChange }) {
-  const [open, setOpen] = useState(false);
-  const [up, setUp] = useState(false);
+  const buttonRef = useRef(null)
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [isUp, setIsUp] = useState(false)
+  const [menuMaxHeight, setMenuMaxHeight] = useState(0)
 
   const toggle = () => {
-    if (!open) setUp(window.innerHeight < 500);
-    setOpen((o) => !o);
+    if (buttonRef.current) {
+      const {
+        top: buttonTop,
+        bottom: buttonBottom,
+      } = buttonRef.current.getBoundingClientRect()
+
+      if (window.innerHeight < 500) {
+        setIsUp(true)
+        setMenuMaxHeight(window.pageYOffset + buttonTop - (MENU_MARGIN_Y * 2))
+      } else {
+        setIsUp(false)
+        setMenuMaxHeight(0)
+      }
+    }
+    setIsOpen(!isOpen)
   };
 
   return (
-    <div className={"dropdown"}>
-      <button type="button" onClick={toggle}>
+    <div className='dropdown'>
+      <button
+        type='button'
+        ref={buttonRef}
+        onClick={toggle}
+      >
         {value} ▾
       </button>
-      {open && (
-        <ul className={up ? 'dropdown-menu up' : 'dropdown-menu'}>
+      {isOpen && (
+        <ul
+          className={isUp ? 'dropdown-menu up' : 'dropdown-menu'}
+          style={{ maxHeight: menuMaxHeight ? `${menuMaxHeight}px` : 'none' }}
+        >
           {options.map((v) => (
             <li
               key={v}
               onClick={() => {
                 onChange(v);
-                setOpen(false);
+                setIsOpen(false);
               }}
             >
               {v}

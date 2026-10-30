@@ -63,7 +63,6 @@ button {
   border-radius: 6px;
   padding: 1rem;
   width: 210px;
-  overflow: hidden;
   margin-bottom: 1rem;
   position: relative;
   z-index: 1;
@@ -90,6 +89,9 @@ button:focus-visible {
 }
 
 .dropdown-menu {
+  z-index: 1;
+  overflow: auto;
+  overscroll-behavior: none;
   position: absolute;
   top: 100%;
   left: 50%;
